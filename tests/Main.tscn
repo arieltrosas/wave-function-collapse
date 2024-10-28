@@ -1,0 +1,21 @@
+[gd_scene load_steps=7 format=3 uid="uid://b5awjlte6c817"]
+
+[ext_resource type="Script" path="res://tests/main.gd" id="1_qgpax"]
+[ext_resource type="Script" path="res://addons/wave-function-collapse/wfc/tile.gd" id="2_775db"]
+[ext_resource type="Script" path="res://addons/wave-function-collapse/wfc/tileset.gd" id="2_gaxbv"]
+
+[sub_resource type="Resource" id="Resource_umxd2"]
+script = ExtResource("2_775db")
+json_path = "res://resources/ex_tileset/01.json"
+
+[sub_resource type="Resource" id="Resource_0aa8d"]
+script = ExtResource("2_775db")
+json_path = "res://resources/ex_tileset/02.json"
+
+[sub_resource type="Resource" id="Resource_7uo0s"]
+script = ExtResource("2_gaxbv")
+tiles = Array[ExtResource("2_775db")]([SubResource("Resource_umxd2"), SubResource("Resource_0aa8d")])
+
+[node name="Main" type="Node3D"]
+script = ExtResource("1_qgpax")
+tileset = SubResource("Resource_7uo0s")

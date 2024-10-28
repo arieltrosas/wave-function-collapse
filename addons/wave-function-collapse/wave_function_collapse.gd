@@ -9,12 +9,15 @@ static func Log(p_msg : String) -> void:
 	var msg : String = MsgFormat % [LogHeader,p_msg]
 	print_rich("[b][color=yellow]%s[/color][/b]" % msg)
 
-
 ################################################################################
+## Plugin Setup/Cleanup
 
 func _enter_tree():
-	Log("Enabled.")
+	Log("Enabled")
 
 
 func _exit_tree():
-	Log("Disabled.")
+	Log("Disabled")
+
+################################################################################
+## Utility Methods
