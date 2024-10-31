@@ -1,0 +1,11 @@
+{
+	"id" : "white",
+	"borders" : {
+		"left" : { "white" : 0.0, "black" : 1.0 },
+		"right" : { "white" : 0.0, "black" : 1.0 },
+		"front" : { "white" : 0.0, "black" : 1.0 },
+		"back" : { "white" : 0.0, "black" : 1.0 },
+		"top" : { "white" : 0.0, "black" : 1.0 },
+		"bottom" : { "white" : 0.0, "black" : 1.0 },
+	}
+}
