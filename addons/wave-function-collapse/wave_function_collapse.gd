@@ -1,6 +1,9 @@
 @tool
 class_name WFCPlugin extends EditorPlugin
 ################################################################################
+## Constants
+
+################################################################################
 ## Global Pluging Scope
 
 static func Log(p_msg : String) -> void:
@@ -14,7 +17,6 @@ static func Log(p_msg : String) -> void:
 
 func _enter_tree():
 	Log("Enabled")
-
 
 func _exit_tree():
 	Log("Disabled")

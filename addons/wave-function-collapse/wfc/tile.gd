@@ -1,6 +1,7 @@
 class_name TileWFC extends Resource
 ################################################################################
 ## Constants and Data
+
 const ERROR_ID_KEY : int = 1
 const ERROR_BORDERS_KEY : int = 2
 const ERROR_BORDER_KEY : int = 3
