@@ -2,9 +2,19 @@ class_name SolverWFC extends RefCounted
 ################################################################################
 ## Constants and Data Structures
 
+const ERROR_UNDEFINED : int = -1
+const ERROR_UNSOLVABLE_PROBLEM : int = -2
+const ERROR_SOLVER_PARAMETERS : int = -3
+
 class Solution extends RefCounted:
+	signal updated(p_index : int)
+
 	var solution : Array[int]
-	var tile_id_map : Array[String]
+	var tiles : Array[String]
+
+	func get_tile(p_index : int) -> String:
+		var t : int = solution[p_index]
+		return tiles[t] if t != -1 else ""
 
 class Problem extends RefCounted:
 
@@ -55,6 +65,8 @@ class Problem extends RefCounted:
 		return border_constraint
 
 class Cell extends RefCounted:
+	signal tile_updated
+
 	var index : int = -1
 	var tile : int = -1: set = _set_tile
 	var domain : Array[float]
@@ -66,6 +78,7 @@ class Cell extends RefCounted:
 			domain.fill(0.0)
 			domain[tile] = 1.0
 		else: domain.fill(1.0)
+		tile_updated.emit()
 
 	static func make_cell(p_index : int, p_domain_size : int) -> Cell:
 		var cell : Cell = Cell.new()
@@ -172,14 +185,21 @@ var rng : RandomNumberGenerator = null
 ################################################################################
 ## Public Methods
 
-func solve(P : Problem) -> Solution:
-	if not rng: return
-	var S : Solution = Solution.new()
+func solve(P : Problem, S : Solution) -> int:
+	if not rng: return ERROR_SOLVER_PARAMETERS
+
 	S.solution.resize(P.size)
 	S.solution.fill(-1)
-	S.tile_id_map = P.tiles
+	S.tiles = P.tiles
 
 	var cells : Array[Cell] = Cell.make_array(P.size,P.domain_size)
+	for cell in cells:
+		cell.tile_updated.connect(
+			func() -> void:
+				S.solution[cell.index] = cell.tile
+				S.updated.emit.call_deferred(cell.index)
+		)
+
 	var exploration_queue : PriorityQueue = PriorityQueue.new()
 	var backtrack_stack : Array[BacktrackNode]
 
@@ -187,7 +207,7 @@ func solve(P : Problem) -> Solution:
 
 	# Algorithm
 
-	while not exploration_queue.is_empty():
+	while not exploration_queue.is_empty(): # main loop
 		var current_index : int = exploration_queue.next()
 		var current_cell : Cell = cells[current_index]
 
@@ -195,43 +215,30 @@ func solve(P : Problem) -> Solution:
 
 		backtrack_stack.push_back(BacktrackNode.make_backtrack_node(current_cell,cells,P))
 
-		current_cell.collapse(rng)
-		var next_cells : Array[Cell]
-		var backtrack : bool = not _propagate(current_cell,cells,next_cells,P)
+		var backtrack : bool = _collapse_cell(current_cell,cells,exploration_queue,P)
 
-		for cell in next_cells:
-				exploration_queue.insert(cell.index,cell.entropy())
-
-		while backtrack:
+		while backtrack: # backtrack loop
 			if backtrack_stack.is_empty():
-				print("Unsolvable problem: empty stack")
-				return S
+				return ERROR_UNSOLVABLE_PROBLEM
+			backtrack = _backtrack(cells,backtrack_stack,exploration_queue,P)
 
-			var bnode : BacktrackNode = backtrack_stack.back()
-			current_index = bnode.state[0].index
-			current_cell = cells[current_index]
+		# end backtrack loop
 
-			var is_domain_empty : bool = not _restore_backtrack_node(current_cell,bnode,cells,P)
-
-			if is_domain_empty:
-				backtrack_stack.pop_back()
-				exploration_queue.insert(current_index,current_cell.entropy())
-			else:
-				current_cell.collapse(rng)
-				backtrack = not _propagate(current_cell,cells,next_cells,P)
-				for cell in next_cells:
-					exploration_queue.insert(cell.index,cell.entropy())
+	# end main loop
 
 	# End Algorithm
 
-	for i in P.size: S.solution[i] = cells[i].tile
-
-	return S
+	return OK
 
 ################################################################################
 ## Private Methods
 
-func _propagate(p_cell : Cell, p_cells : Array[Cell], r_next : Array[Cell], P : Problem, ) -> bool:
+func _collapse_cell(p_cell : Cell, p_cells : Array[Cell], p_queue : PriorityQueue, P : Problem) -> bool:
+	p_cell.collapse(rng)
+	return not _propagate(p_cell,p_cells,p_queue,P)
+
+func _propagate(p_cell : Cell, p_cells : Array[Cell], p_queue : PriorityQueue, P : Problem) -> bool:
+	var next : Array[Cell]
 	for border_key in P.border_keys:
 		var neighbour_index : int = P.get_neighbour(p_cell.index,border_key)
 		if neighbour_index == -1: continue
@@ -240,11 +247,28 @@ func _propagate(p_cell : Cell, p_cells : Array[Cell], r_next : Array[Cell], P : 
 			var constraint : Array[float] = P.get_border_constraint(p_cell.tile,border_key)
 			neighbour_cell.constrain_domain(constraint)
 			if neighbour_cell.is_domain_empty():
-				r_next.clear()
+				next.clear()
 				return false
-			r_next.push_back(neighbour_cell)
+			next.push_back(neighbour_cell)
+
+	for cell in next: p_queue.insert(cell.index,cell.entropy())
 
 	return true
+
+func _backtrack(p_cells : Array[Cell], p_bstack : Array[BacktrackNode], p_queue : PriorityQueue, P : Problem) -> bool:
+	var bnode : BacktrackNode = p_bstack.back()
+	var current_cell = p_cells[bnode.state[0].index]
+
+	var is_domain_empty : bool = not _restore_backtrack_node(current_cell,bnode,p_cells,P)
+
+	if is_domain_empty:
+		p_bstack.pop_back()
+		p_queue.insert(current_cell.index,current_cell.entropy())
+		return true
+
+	var backtrack = _collapse_cell(current_cell,p_cells,p_queue,P)
+
+	return backtrack
 
 func _restore_backtrack_node(p_cell : Cell, p_bnode : BacktrackNode, p_cells : Array[Cell], P : Problem) -> bool:
 	p_bnode.domain_veto[p_cell.tile] = 0.0

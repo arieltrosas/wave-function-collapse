@@ -41,7 +41,7 @@ script = ExtResource("1_snxlk")
 script = ExtResource("2_8c4d8")
 tileset = SubResource("Resource_4gl1y")
 seed = 42
-dimensions = Vector3i(8, 2, 8)
+dimensions = Vector3i(25, 2, 25)
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_wupcc")
@@ -51,6 +51,6 @@ transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -
 shadow_enabled = true
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(0.92881, -0.169669, 0.329432, 0, 0.889017, 0.457874, -0.370558, -0.425278, 0.825728, 6.14331, 8.53852, 15.3983)
+transform = Transform3D(0.92881, -0.169669, 0.329432, 0, 0.889017, 0.457874, -0.370558, -0.425278, 0.825728, 28.6256, 39.7865, 71.7507)
 current = true
 size = 25.0
