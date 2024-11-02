@@ -14,7 +14,7 @@ const ANIMATE_WAIT_TIME : float = 1.0 / 30
 @export var seed : int = 0
 
 @export_group("Grid")
-@export var dimensions : Vector3i = Vector3i(5,1,5)
+@export var dimensions : Vector3i = Vector3i(5,1,5): set = _set_dimensions
 @export_range(0.1,5.0,0.05) var cell_size : float = 1.0
 
 @export_group("Visualization")
@@ -30,15 +30,21 @@ var _m_solver_trace : Array
 var _m_tileMap : Array[Node3D]
 var _m_collapse_thread : Thread
 var _m_animation_thread : Thread
+var _m_animation_running : bool = false
 
 ################################################################################
 ## Public Methods
 
 func is_collapsing() -> bool:
-	return _m_collapse_thread.is_alive()
+	return _m_collapse_thread.is_alive() or _m_animation_running
+
 
 func collapse() -> void:
 	if is_collapsing(): return
+
+	clear()
+	for tile in tileset.tiles: tile.load_from_file()
+	_m_tileMap.resize(dimensions.x * dimensions.y * dimensions.z)
 
 	_set_solver_parameters()
 
@@ -51,6 +57,7 @@ func collapse() -> void:
 
 	if animate: _m_collapse_thread.start(_collapse_animate_on.bind(P,S))
 	else: _m_collapse_thread.start(_collapse_animate_off.bind(P,S))
+
 
 func place_tile(p_id : String, p_position : Vector3i) -> void:
 	if p_id == "":
@@ -72,6 +79,7 @@ func place_tile(p_id : String, p_position : Vector3i) -> void:
 	add_child(tile_scene_node)
 	_m_tileMap[_position2index(p_position)] = tile_scene_node
 
+
 func remove_tile(p_position : Vector3i) -> void:
 	if not _in_range(p_position): return
 	var index : int = _position2index(p_position)
@@ -83,21 +91,24 @@ func remove_tile(p_position : Vector3i) -> void:
 	remove_child(tile_scene_node)
 	tile_scene_node.queue_free()
 
+
+func clear() -> void:
+	for i in _m_tileMap.size(): remove_tile(_index2position(i))
+	_m_tileMap.clear()
+
 ################################################################################
 ## Engine Methods
-
-func _ready() -> void:
-	for tile in tileset.tiles: tile.load_from_file()
-	_m_tileMap.resize(dimensions.x * dimensions.y * dimensions.z)
 
 func _init() -> void:
 	_m_solver = SolverWFC.new()
 	_m_collapse_thread = Thread.new()
 	_m_animation_thread = Thread.new()
 
+
 func _process(delta: float) -> void:
 	if _m_collapse_thread.is_started() and not _m_collapse_thread.is_alive():
 		_m_collapse_thread.wait_to_finish()
+
 
 func _exit_tree() -> void:
 	if _m_collapse_thread.is_alive():
@@ -112,11 +123,13 @@ func _in_range(p_pos : Vector3i) -> bool:
 	var in_range_z : bool = 0 <= p_pos.z and p_pos.z < dimensions.z
 	return in_range_x and in_range_y and in_range_z
 
+
 func _position2index(p_pos : Vector3i) -> int:
 	if not _in_range(p_pos): return -1
 	var size_xz : int = dimensions.x * dimensions.z
 	var index_xz : int = p_pos.z * dimensions.x + p_pos.x
 	return p_pos.y * size_xz + index_xz
+
 
 func _index2position(p_index : int) -> Vector3i:
 	if p_index < 0: return Vector3i(-1,-1,-1)
@@ -126,6 +139,7 @@ func _index2position(p_index : int) -> Vector3i:
 	var x : int = index_xz % dimensions.x
 	var z : int = index_xz / dimensions.x
 	return Vector3i(x,y,z)
+
 
 func _get_neighbour(p_index : int, p_border_key : String) -> int:
 	var index_position : Vector3i = _index2position(p_index)
@@ -141,6 +155,7 @@ func _get_neighbour(p_index : int, p_border_key : String) -> int:
 
 	return _position2index(neighbour_position)
 
+
 func _set_solver_parameters() -> void:
 	if not rng:
 		rng = RandomNumberGenerator.new()
@@ -148,7 +163,10 @@ func _set_solver_parameters() -> void:
 		else: rng.randomize()
 	_m_solver.rng = rng
 
+
 func _collapse_animate_on(P : SolverWFC.Problem, S : SolverWFC.Solution) -> void:
+	_m_animation_running = true
+
 	S.updated.connect(
 		func(p_index : int) -> void:
 			_m_solver_trace.push_back({"index" : p_index, "tile" : S.get_tile(p_index)})
@@ -163,10 +181,13 @@ func _collapse_animate_on(P : SolverWFC.Problem, S : SolverWFC.Solution) -> void
 					var tile_id : String = trace["tile"]
 					place_tile(tile_id,_index2position(tile_index))
 				await get_tree().create_timer(ANIMATE_WAIT_TIME / animate_speed).timeout
+
+			_m_animation_running = false
 	)
 
 	_m_solver.solve(P,S)
 	_m_animation_thread.wait_to_finish()
+
 
 func _collapse_animate_off(P : SolverWFC.Problem, S : SolverWFC.Solution) -> void:
 	_m_solver.solve(P,S)
@@ -174,3 +195,14 @@ func _collapse_animate_off(P : SolverWFC.Problem, S : SolverWFC.Solution) -> voi
 		var tile_id : String = S.get_tile(index)
 		var tile_position : Vector3i = _index2position(index)
 		place_tile.call_deferred(tile_id,tile_position)
+
+
+################################################################################
+## Set/Get
+
+func _set_dimensions(p_dimensions : Vector3i) -> void:
+	p_dimensions.x = max(1,p_dimensions.x)
+	p_dimensions.y = max(1,p_dimensions.y)
+	p_dimensions.z = max(1,p_dimensions.z)
+	clear()
+	dimensions = p_dimensions

@@ -107,7 +107,7 @@ func _process(delta : float) -> void:
 	_mouse_wheel_dir = 0.0
 
 
-func _input(p_event : InputEvent) -> void:
+func _unhandled_input(p_event : InputEvent) -> void:
 	if p_event is InputEventKey:
 		var key_event : InputEventKey = p_event as InputEventKey
 		if key_event.keycode == KEY_SHIFT:

@@ -1,7 +1,13 @@
-[gd_scene load_steps=7 format=3 uid="uid://c3uvgrfbv2vk0"]
+[gd_scene load_steps=19 format=3 uid="uid://c3uvgrfbv2vk0"]
 
 [ext_resource type="Script" path="res://addons/wave-function-collapse/editor/editor.gd" id="1_1x12t"]
 [ext_resource type="Script" path="res://addons/wave-function-collapse/editor/camera.gd" id="2_v3yqy"]
+[ext_resource type="Script" path="res://addons/wave-function-collapse/wfc/node.gd" id="4_0by6m"]
+[ext_resource type="Script" path="res://addons/wave-function-collapse/wfc/tileset.gd" id="5_xnn4o"]
+[ext_resource type="Script" path="res://addons/wave-function-collapse/wfc/tile.gd" id="6_q28oe"]
+[ext_resource type="PackedScene" uid="uid://bsha4ham34as0" path="res://resources/chess/white.tscn" id="7_2iom0"]
+[ext_resource type="PackedScene" uid="uid://gf3mtqi6ar07" path="res://resources/chess/black.tscn" id="8_e4xyo"]
+[ext_resource type="Script" path="res://addons/wave-function-collapse/editor/ui.gd" id="8_oura0"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_m4nre"]
 sky_top_color = Color(0.398306, 0.468266, 0.565609, 1)
@@ -18,7 +24,30 @@ sky = SubResource("Sky_3xjnd")
 tonemap_mode = 2
 glow_enabled = true
 
+[sub_resource type="Resource" id="Resource_d84wm"]
+script = ExtResource("6_q28oe")
+scene = ExtResource("8_e4xyo")
+json_path = "res://resources/chess/black.json"
+
+[sub_resource type="Resource" id="Resource_r2jgy"]
+script = ExtResource("6_q28oe")
+scene = ExtResource("7_2iom0")
+json_path = "res://resources/chess/white.json"
+
+[sub_resource type="Resource" id="Resource_xxy7k"]
+script = ExtResource("5_xnn4o")
+tiles = Array[ExtResource("6_q28oe")]([SubResource("Resource_d84wm"), SubResource("Resource_r2jgy")])
+
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_w26kx"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_7nfwd"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_3v1rh"]
+
+[sub_resource type="Theme" id="Theme_7jehx"]
+default_font_size = 10
+Button/styles/focus = SubResource("StyleBoxEmpty_7nfwd")
+LineEdit/styles/focus = SubResource("StyleBoxEmpty_3v1rh")
 
 [node name="Editor" type="Node3D"]
 script = ExtResource("1_1x12t")
@@ -30,9 +59,228 @@ environment = SubResource("Environment_1r10t")
 transform = Transform3D(0.707107, -0.5, 0.5, 0, 0.707107, 0.707107, -0.707107, -0.5, 0.5, 0, 0, 0)
 shadow_enabled = true
 
+[node name="Generator" type="Node3D" parent="."]
+script = ExtResource("4_0by6m")
+tileset = SubResource("Resource_xxy7k")
+seed = 46
+
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 mesh = SubResource("CapsuleMesh_w26kx")
 
 [node name="Camera" type="Camera3D" parent="."]
 current = true
 script = ExtResource("2_v3yqy")
+
+[node name="UI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 1
+mouse_filter = 1
+theme = SubResource("Theme_7jehx")
+script = ExtResource("8_oura0")
+
+[node name="MarginContainer" type="MarginContainer" parent="UI"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -219.0
+offset_bottom = 238.0
+grow_horizontal = 0
+mouse_filter = 0
+mouse_force_pass_scroll_events = false
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="Panel" type="Panel" parent="UI/MarginContainer"]
+layout_mode = 2
+
+[node name="MarginContainer2" type="MarginContainer" parent="UI/MarginContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/MarginContainer/MarginContainer2"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/MarginContainer/MarginContainer2/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/VBoxContainer"]
+layout_mode = 2
+text = "Options"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PanelContainer" type="PanelContainer" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Panel" type="Panel" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/VBoxContainer/PanelContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/VBoxContainer/PanelContainer"]
+layout_mode = 2
+
+[node name="SeedOption" type="MarginContainer" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/VBoxContainer/PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 1
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 1
+
+[node name="HFlowContainer" type="HFlowContainer" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/SeedOption"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/SeedOption/HFlowContainer"]
+layout_mode = 2
+text = "Seed"
+
+[node name="SpinBox" type="SpinBox" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/SeedOption/HFlowContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 0.0
+rounded = true
+allow_greater = true
+allow_lesser = true
+alignment = 2
+update_on_text_changed = true
+
+[node name="DimensionsOption" type="MarginContainer" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/VBoxContainer/PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 1
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/DimensionsOption"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/DimensionsOption/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Grid Dimensions"
+
+[node name="HFlowContainer" type="HFlowContainer" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/DimensionsOption/VBoxContainer"]
+layout_mode = 2
+
+[node name="x" type="SpinBox" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/DimensionsOption/VBoxContainer/HFlowContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 1.0
+value = 5.0
+update_on_text_changed = true
+prefix = "x:"
+
+[node name="y" type="SpinBox" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/DimensionsOption/VBoxContainer/HFlowContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 1.0
+value = 1.0
+update_on_text_changed = true
+prefix = "y:"
+
+[node name="z" type="SpinBox" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/DimensionsOption/VBoxContainer/HFlowContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 1.0
+value = 5.0
+update_on_text_changed = true
+prefix = "z:"
+
+[node name="CellSizeOption" type="MarginContainer" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/VBoxContainer/PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="HFlowContainer" type="HFlowContainer" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/CellSizeOption"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/CellSizeOption/HFlowContainer"]
+layout_mode = 2
+text = "Cell Size"
+
+[node name="SpinBox" type="SpinBox" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/CellSizeOption/HFlowContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 0.1
+max_value = 10.0
+step = 0.1
+value = 1.0
+alignment = 2
+update_on_text_changed = true
+suffix = "m"
+
+[node name="AnimateOption" type="MarginContainer" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/VBoxContainer/PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="HFlowContainer" type="HFlowContainer" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/AnimateOption"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/AnimateOption/HFlowContainer"]
+layout_mode = 2
+text = "Animate"
+
+[node name="CheckButton" type="CheckButton" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/AnimateOption/HFlowContainer"]
+layout_mode = 2
+text = "
+"
+
+[node name="AnimateSpeedOption" type="MarginContainer" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/VBoxContainer/PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="HFlowContainer" type="HFlowContainer" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/AnimateSpeedOption"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/AnimateSpeedOption/HFlowContainer"]
+layout_mode = 2
+text = "Animation Speed"
+
+[node name="HSlider" type="HSlider" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/AnimateSpeedOption/HFlowContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 0.1
+max_value = 3.0
+step = 0.1
+value = 1.0
+scrollable = false
+
+[node name="GenerateButton" type="Button" parent="UI/MarginContainer/MarginContainer2/VBoxContainer"]
+layout_mode = 2
+text = "Generate"
+
+[connection signal="animate_flag_updated" from="UI" to="." method="_on_ui_animate_flag_updated"]
+[connection signal="animate_speed_updated" from="UI" to="." method="_on_ui_animate_speed_updated"]
+[connection signal="cell_size_updated" from="UI" to="." method="_on_ui_cell_size_updated"]
+[connection signal="dimension_updated" from="UI" to="." method="_on_ui_dimension_updated"]
+[connection signal="generate_button_pressed" from="UI" to="." method="_on_ui_generate_button_pressed"]
+[connection signal="gui_input" from="UI" to="UI" method="_on_gui_input"]
+[connection signal="seed_updated" from="UI" to="." method="_on_ui_seed_updated"]
+[connection signal="value_changed" from="UI/MarginContainer/MarginContainer2/VBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/SeedOption/HFlowContainer/SpinBox" to="UI" method="_on_seed_value_changed"]
+[connection signal="value_changed" from="UI/MarginContainer/MarginContainer2/VBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/DimensionsOption/VBoxContainer/HFlowContainer/x" to="UI" method="_on_dimension_x_value_changed"]
+[connection signal="value_changed" from="UI/MarginContainer/MarginContainer2/VBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/DimensionsOption/VBoxContainer/HFlowContainer/y" to="UI" method="_on_dimension_y_value_changed"]
+[connection signal="value_changed" from="UI/MarginContainer/MarginContainer2/VBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/DimensionsOption/VBoxContainer/HFlowContainer/z" to="UI" method="_on_dimension_z_value_changed"]
+[connection signal="value_changed" from="UI/MarginContainer/MarginContainer2/VBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/CellSizeOption/HFlowContainer/SpinBox" to="UI" method="_on_cell_size_value_changed"]
+[connection signal="toggled" from="UI/MarginContainer/MarginContainer2/VBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/AnimateOption/HFlowContainer/CheckButton" to="UI" method="_on_animate_flag_value_changed"]
+[connection signal="value_changed" from="UI/MarginContainer/MarginContainer2/VBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/AnimateSpeedOption/HFlowContainer/HSlider" to="UI" method="_set_animate_speed_value"]
+[connection signal="pressed" from="UI/MarginContainer/MarginContainer2/VBoxContainer/GenerateButton" to="UI" method="_on_generate_button_pressed"]
