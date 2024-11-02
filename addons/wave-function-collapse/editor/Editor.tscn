@@ -1,0 +1,38 @@
+[gd_scene load_steps=7 format=3 uid="uid://c3uvgrfbv2vk0"]
+
+[ext_resource type="Script" path="res://addons/wave-function-collapse/editor/editor.gd" id="1_1x12t"]
+[ext_resource type="Script" path="res://addons/wave-function-collapse/editor/camera.gd" id="2_v3yqy"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_m4nre"]
+sky_top_color = Color(0.398306, 0.468266, 0.565609, 1)
+sky_horizon_color = Color(0.649576, 0.659317, 0.674652, 1)
+sky_energy_multiplier = 0.95
+ground_horizon_color = Color(0.649576, 0.659317, 0.674652, 1)
+
+[sub_resource type="Sky" id="Sky_3xjnd"]
+sky_material = SubResource("ProceduralSkyMaterial_m4nre")
+
+[sub_resource type="Environment" id="Environment_1r10t"]
+background_mode = 2
+sky = SubResource("Sky_3xjnd")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_w26kx"]
+
+[node name="Editor" type="Node3D"]
+script = ExtResource("1_1x12t")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_1r10t")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.707107, -0.5, 0.5, 0, 0.707107, 0.707107, -0.707107, -0.5, 0.5, 0, 0, 0)
+shadow_enabled = true
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("CapsuleMesh_w26kx")
+
+[node name="Camera" type="Camera3D" parent="."]
+current = true
+script = ExtResource("2_v3yqy")
