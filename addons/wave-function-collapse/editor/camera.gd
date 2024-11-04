@@ -3,11 +3,17 @@ extends Camera3D
 ## Constants and Data
 
 enum CameraMode { Ortho, Orbit }
-enum OrthoView { Front, Rear, Right, Left, Top, Bottom }
 
 const BaseCameraSpeed : float = 10.0
 const BaseCameraSensitivity : float = 0.25
 const BaseViewDistance : float = 5.0
+
+const OrthoViewFront : int = 0
+const OrthoViewRear : int = 1
+const OrthoViewRight : int = 2
+const OrthoViewLeft : int = 3
+const OrthoViewTop : int = 4
+const OrthoViewBottom : int = 5
 
 ################################################################################
 ## Properties
@@ -26,6 +32,7 @@ var _orbit_rotation : Vector3 = Vector3(0,0,0)
 
 ################################################################################
 ## Public Methods
+
 
 func get_forward_vector() -> Vector3:
 	return -global_basis.z
@@ -58,20 +65,20 @@ func _process_pan(delta : float) -> void:
 	_look_at_point += displacement
 
 
-func _set_camera_mode_ortho(p_ortho_view : OrthoView) -> void:
+func set_camera_mode_ortho(p_ortho_view : int) -> void:
 	mode = CameraMode.Ortho
 	projection = ProjectionType.PROJECTION_ORTHOGONAL
 
 	match p_ortho_view:
-		OrthoView.Front: _orbit_rotation = Vector3(0,0,0)
-		OrthoView.Rear: _orbit_rotation = Vector3(0,PI,0)
-		OrthoView.Right: _orbit_rotation = Vector3(0,PI * 0.5,0)
-		OrthoView.Left: _orbit_rotation = Vector3(0,PI * 1.5,0)
-		OrthoView.Top: _orbit_rotation = Vector3(PI * 0.4999,0,0)
-		OrthoView.Bottom: _orbit_rotation = Vector3(-PI * 0.4999,0,0)
+		OrthoViewFront: _orbit_rotation = Vector3(0,0,0)
+		OrthoViewRear: _orbit_rotation = Vector3(0,PI,0)
+		OrthoViewRight: _orbit_rotation = Vector3(0,PI * 0.5,0)
+		OrthoViewLeft: _orbit_rotation = Vector3(0,PI * 1.5,0)
+		OrthoViewTop: _orbit_rotation = Vector3(-PI * 0.4999,0,0)
+		OrthoViewBottom: _orbit_rotation = Vector3(PI * 0.4999,0,0)
 
-func _set_camera_mode_orbit() -> void:
-	mode = CameraMode.Ortho
+func set_camera_mode_orbit() -> void:
+	mode = CameraMode.Orbit
 	projection = ProjectionType.PROJECTION_PERSPECTIVE
 
 ################################################################################
@@ -90,7 +97,7 @@ func _process(delta : float) -> void:
 	elif Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 
-	if is_drag_mode and mode == CameraMode.Ortho: _set_camera_mode_orbit()
+	if is_drag_mode and mode == CameraMode.Ortho: set_camera_mode_orbit()
 
 	if is_drag_mode: _process_drag(delta)
 	if is_panning_mode: _process_pan(delta)
@@ -112,13 +119,6 @@ func _unhandled_input(p_event : InputEvent) -> void:
 		var key_event : InputEventKey = p_event as InputEventKey
 		if key_event.keycode == KEY_SHIFT:
 			_is_shift_pressed = key_event.pressed
-
-		if key_event.keycode == KEY_1: _set_camera_mode_ortho(OrthoView.Front)
-		if key_event.keycode == KEY_2: _set_camera_mode_ortho(OrthoView.Rear)
-		if key_event.keycode == KEY_3: _set_camera_mode_ortho(OrthoView.Right)
-		if key_event.keycode == KEY_4: _set_camera_mode_ortho(OrthoView.Left)
-		if key_event.keycode == KEY_5: _set_camera_mode_ortho(OrthoView.Top)
-		if key_event.keycode == KEY_6: _set_camera_mode_ortho(OrthoView.Bottom)
 
 	if p_event is InputEventMouseButton:
 		var mouse_button_event : InputEventMouseButton = p_event as InputEventMouseButton

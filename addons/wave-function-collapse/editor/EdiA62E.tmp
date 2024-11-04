@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://c3uvgrfbv2vk0"]
+[gd_scene load_steps=24 format=3 uid="uid://c3uvgrfbv2vk0"]
 
 [ext_resource type="Script" path="res://addons/wave-function-collapse/editor/editor.gd" id="1_1x12t"]
 [ext_resource type="Script" path="res://addons/wave-function-collapse/editor/camera.gd" id="2_v3yqy"]
@@ -51,7 +51,18 @@ albedo_color = Color(0, 0.587667, 0.86, 0.686275)
 [sub_resource type="PlaneMesh" id="PlaneMesh_280yy"]
 size = Vector2(4000, 4000)
 
-[sub_resource type="CylinderMesh" id="CylinderMesh_0geru"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qdtfd"]
+transparency = 1
+cull_mode = 2
+shading_mode = 0
+albedo_color = Color(0, 0.6935, 0.73, 0.513726)
+grow_amount = 0.212
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hq1dx"]
+albedo_color = Color(1, 0.17, 0.17, 1)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_w26kx"]
+material = SubResource("StandardMaterial3D_hq1dx")
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_7nfwd"]
 
@@ -91,8 +102,9 @@ ignore_occlusion_culling = true
 mesh = SubResource("PlaneMesh_280yy")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
-mesh = SubResource("CylinderMesh_0geru")
+visible = false
+material_overlay = SubResource("StandardMaterial3D_qdtfd")
+mesh = SubResource("CapsuleMesh_w26kx")
 
 [node name="UI" type="Control" parent="."]
 layout_mode = 3

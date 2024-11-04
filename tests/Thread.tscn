@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://dat5gh1c85xnr"]
-
-[ext_resource type="Script" path="res://tests/thread.gd" id="1_blies"]
-
-[node name="Thread" type="Node"]
-script = ExtResource("1_blies")

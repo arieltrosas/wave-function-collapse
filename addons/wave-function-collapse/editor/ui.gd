@@ -2,13 +2,24 @@ extends Control
 ################################################################################
 ## UI Components
 
-@onready var seed_spinbox : SpinBox = $MarginContainer/MarginContainer2/VBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/SeedOption/HFlowContainer/SpinBox
-@onready var dimension_x_spinbox : SpinBox = $MarginContainer/MarginContainer2/VBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/DimensionsOption/VBoxContainer/HFlowContainer/x
-@onready var dimension_y_spinbox : SpinBox = $MarginContainer/MarginContainer2/VBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/DimensionsOption/VBoxContainer/HFlowContainer/y
-@onready var dimension_z_spinbox : SpinBox = $MarginContainer/MarginContainer2/VBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/DimensionsOption/VBoxContainer/HFlowContainer/z
-@onready var cell_size_spinbox : SpinBox = $MarginContainer/MarginContainer2/VBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/CellSizeOption/HFlowContainer/SpinBox
-@onready var animate_flag_checkbutton : CheckButton = $MarginContainer/MarginContainer2/VBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/AnimateOption/HFlowContainer/CheckButton
-@onready var animate_speed_slider : HSlider = $MarginContainer/MarginContainer2/VBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/AnimateSpeedOption/HFlowContainer/HSlider
+const TileListIcon : Texture2D = preload("res://addons/wave-function-collapse/resources/icon_tilewfc.svg")
+
+@onready var generate_button : Button = $MarginContainer/MarginContainer2/VBoxContainer/GenerateButton
+@onready var clear_button : Button = $MarginContainer/MarginContainer2/VBoxContainer/Clear
+
+@onready var seed_spinbox : SpinBox = $MarginContainer/MarginContainer2/VBoxContainer/Tabs/Options/VBoxContainer/SeedOption/HFlowContainer/SpinBox
+@onready var dimension_x_spinbox : SpinBox = $MarginContainer/MarginContainer2/VBoxContainer/Tabs/Options/VBoxContainer/DimensionsOption/VBoxContainer/HFlowContainer/x
+@onready var dimension_y_spinbox : SpinBox = $MarginContainer/MarginContainer2/VBoxContainer/Tabs/Options/VBoxContainer/DimensionsOption/VBoxContainer/HFlowContainer/y
+@onready var dimension_z_spinbox : SpinBox = $MarginContainer/MarginContainer2/VBoxContainer/Tabs/Options/VBoxContainer/DimensionsOption/VBoxContainer/HFlowContainer/z
+@onready var cell_size_spinbox : SpinBox = $MarginContainer/MarginContainer2/VBoxContainer/Tabs/Options/VBoxContainer/CellSizeOption/HFlowContainer/SpinBox
+@onready var animate_flag_checkbutton : CheckButton = $MarginContainer/MarginContainer2/VBoxContainer/Tabs/Options/VBoxContainer/AnimateOption/HFlowContainer/CheckButton
+@onready var animate_speed_slider : HSlider = $MarginContainer/MarginContainer2/VBoxContainer/Tabs/Options/VBoxContainer/AnimateSpeedOption/HFlowContainer/HSlider
+
+@onready var tile_list : ItemList = $"MarginContainer/MarginContainer2/VBoxContainer/Tabs/Tiles/MarginContainer/VBoxContainer/ScrollContainer/Panel/TileList"
+
+@onready var tile_pos_label : Label = $MarginContainer2/PanelContainer/MarginContainer2/MarginContainer/HBoxContainer/TilePosLabel
+@onready var mode_label : Label = $MarginContainer2/PanelContainer/MarginContainer/MarginContainer/HBoxContainer/ModeLabel
+
 
 ################################################################################
 ## Members
@@ -29,13 +40,42 @@ var _animate_flag_value : bool = true: set = _set_animate_flag_value
 var _animate_speed_value : float = 1.0: set = _set_animate_speed_value
 
 ################################################################################
+## Public Methods
+
+func add_tile_to_list(tile_id : String) -> void:
+	tile_list.add_item(tile_id,TileListIcon)
+
+
+func clear_tile_list() -> void:
+	tile_list.clear()
+
+
+func get_selected_tile_id() -> String:
+	var selection : PackedInt32Array = tile_list.get_selected_items()
+	if selection.is_empty(): return ""
+	return tile_list.get_item_text(selection[0])
+
+
+func set_tile_position(p_tilepos : Vector3i) -> void:
+	if p_tilepos == Vector3i(-1,-1,-1):
+		tile_pos_label.text = "(-,-,-)"
+	else:
+		tile_pos_label.text = str(p_tilepos)
+
+
+func set_mode_label(p_string : String) -> void:
+	mode_label.text = p_string
+
+
+################################################################################
 ## Engine Methods
 
 ################################################################################
 ## Signals
 
 func _on_gui_input(p_event: InputEvent) -> void:
-	if p_event is InputEventMouseButton: grab_focus()
+	if p_event is InputEventMouseButton:
+		grab_focus()
 
 
 func _on_seed_value_changed(p_value: float) -> void:
@@ -77,6 +117,10 @@ func _on_animate_speed_value_changed(p_value : float) -> void:
 
 func _set_disabled(p_disabled : bool) -> void:
 	disabled = p_disabled
+
+	generate_button.disabled = disabled
+	clear_button.disabled = disabled
+
 	seed_spinbox.editable = not disabled
 	dimension_x_spinbox.editable = not disabled
 	dimension_y_spinbox.editable = not disabled

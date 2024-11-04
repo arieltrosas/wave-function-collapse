@@ -28,12 +28,18 @@ var rng : RandomNumberGenerator
 var _m_solver : SolverWFC
 var _m_solver_trace : Array
 var _m_tileMap : Array[Node3D]
+var _m_tile_ids : Array[String]
 var _m_collapse_thread : Thread
 var _m_animation_thread : Thread
 var _m_animation_running : bool = false
 
 ################################################################################
 ## Public Methods
+
+func get_tile_at(p_pos : Vector3i) -> Node3D:
+	if not _in_range(p_pos): return null
+	return _m_tileMap[_position2index(p_pos)]
+
 
 func is_collapsing() -> bool:
 	return _m_collapse_thread.is_alive() or _m_animation_running
@@ -42,17 +48,18 @@ func is_collapsing() -> bool:
 func collapse() -> void:
 	if is_collapsing(): return
 
-	clear()
-	for tile in tileset.tiles: tile.load_from_file()
-	_m_tileMap.resize(dimensions.x * dimensions.y * dimensions.z)
-
 	_set_solver_parameters()
 
 	var size : int = dimensions.x * dimensions.y * dimensions.z
 	var tiles : Array[String] = tileset.get_tile_ids()
 	var constraints : Dictionary = tileset.get_constraints(BORDER_KEYS)
+	var fixed_cells : Array[Dictionary]
+	for index in _m_tileMap.size():
+		var tile : Node3D = _m_tileMap[index]
+		if not tile: continue
+		fixed_cells.push_back({"index" : index, "tile" : _m_tile_ids[index]})
 
-	var P : SolverWFC.Problem = SolverWFC.Problem.make_problem(size,tiles,BORDER_KEYS,constraints,_get_neighbour)
+	var P : SolverWFC.Problem = SolverWFC.Problem.make_problem(size,tiles,BORDER_KEYS,constraints,_get_neighbour,fixed_cells)
 	var S : SolverWFC.Solution = SolverWFC.Solution.new()
 
 	if animate: _m_collapse_thread.start(_collapse_animate_on.bind(P,S))
@@ -78,6 +85,7 @@ func place_tile(p_id : String, p_position : Vector3i) -> void:
 	tile_scene_node.position = tile_position
 	add_child(tile_scene_node)
 	_m_tileMap[_position2index(p_position)] = tile_scene_node
+	_m_tile_ids[_position2index(p_position)] = p_id
 
 
 func remove_tile(p_position : Vector3i) -> void:
@@ -86,6 +94,7 @@ func remove_tile(p_position : Vector3i) -> void:
 
 	var tile_scene_node : Node3D = _m_tileMap[index]
 	_m_tileMap[index] = null
+	_m_tile_ids[index] = ""
 	if not tile_scene_node: return
 
 	remove_child(tile_scene_node)
@@ -94,7 +103,7 @@ func remove_tile(p_position : Vector3i) -> void:
 
 func clear() -> void:
 	for i in _m_tileMap.size(): remove_tile(_index2position(i))
-	_m_tileMap.clear()
+
 
 ################################################################################
 ## Engine Methods
@@ -103,6 +112,13 @@ func _init() -> void:
 	_m_solver = SolverWFC.new()
 	_m_collapse_thread = Thread.new()
 	_m_animation_thread = Thread.new()
+
+
+func _ready() -> void:
+	for tile in tileset.tiles:
+		tile.load_from_file()
+	_m_tileMap.resize(dimensions.x * dimensions.y * dimensions.z)
+	_m_tile_ids.resize(dimensions.x * dimensions.y * dimensions.z)
 
 
 func _process(delta: float) -> void:
@@ -159,8 +175,8 @@ func _get_neighbour(p_index : int, p_border_key : String) -> int:
 func _set_solver_parameters() -> void:
 	if not rng:
 		rng = RandomNumberGenerator.new()
-		if seed != 0: rng.seed = seed
-		else: rng.randomize()
+	if seed != 0: rng.seed = seed
+	else: rng.randomize()
 	_m_solver.rng = rng
 
 
@@ -201,8 +217,10 @@ func _collapse_animate_off(P : SolverWFC.Problem, S : SolverWFC.Solution) -> voi
 ## Set/Get
 
 func _set_dimensions(p_dimensions : Vector3i) -> void:
+	clear()
 	p_dimensions.x = max(1,p_dimensions.x)
 	p_dimensions.y = max(1,p_dimensions.y)
 	p_dimensions.z = max(1,p_dimensions.z)
-	clear()
 	dimensions = p_dimensions
+	_m_tileMap.resize(dimensions.x * dimensions.y * dimensions.z)
+	_m_tile_ids.resize(dimensions.x * dimensions.y * dimensions.z)

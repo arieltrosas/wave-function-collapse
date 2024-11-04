@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://c3uvgrfbv2vk0"]
+[gd_scene load_steps=21 format=3 uid="uid://c3uvgrfbv2vk0"]
 
 [ext_resource type="Script" path="res://addons/wave-function-collapse/editor/editor.gd" id="1_1x12t"]
 [ext_resource type="Script" path="res://addons/wave-function-collapse/editor/camera.gd" id="2_v3yqy"]
@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://bsha4ham34as0" path="res://resources/chess/white.tscn" id="7_2iom0"]
 [ext_resource type="PackedScene" uid="uid://gf3mtqi6ar07" path="res://resources/chess/black.tscn" id="8_e4xyo"]
 [ext_resource type="Script" path="res://addons/wave-function-collapse/editor/ui.gd" id="8_oura0"]
+[ext_resource type="Texture2D" uid="uid://qvtpp8h6glfw" path="res://addons/wave-function-collapse/resources/icon_tilewfc.svg" id="9_hndr6"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_m4nre"]
 sky_top_color = Color(0.398306, 0.468266, 0.565609, 1)
@@ -24,8 +25,6 @@ sky = SubResource("Sky_3xjnd")
 tonemap_mode = 2
 glow_enabled = true
 
-[sub_resource type="Compositor" id="Compositor_b2qlf"]
-
 [sub_resource type="Resource" id="Resource_d84wm"]
 script = ExtResource("6_q28oe")
 scene = ExtResource("8_e4xyo")
@@ -40,18 +39,7 @@ json_path = "res://resources/chess/white.json"
 script = ExtResource("5_xnn4o")
 tiles = Array[ExtResource("6_q28oe")]([SubResource("Resource_d84wm"), SubResource("Resource_r2jgy")])
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7e77o"]
-transparency = 1
-cull_mode = 2
-depth_draw_mode = 1
-shading_mode = 0
-vertex_color_use_as_albedo = true
-albedo_color = Color(0, 0.587667, 0.86, 0.686275)
-
-[sub_resource type="PlaneMesh" id="PlaneMesh_280yy"]
-size = Vector2(4000, 4000)
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_0geru"]
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_w26kx"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_7nfwd"]
 
@@ -62,12 +50,16 @@ default_font_size = 10
 Button/styles/focus = SubResource("StyleBoxEmpty_7nfwd")
 LineEdit/styles/focus = SubResource("StyleBoxEmpty_3v1rh")
 
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_jihis"]
+content_margin_top = 5.0
+color = Color(0, 0, 0, 0.435294)
+thickness = 2
+
 [node name="Editor" type="Node3D"]
 script = ExtResource("1_1x12t")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_1r10t")
-compositor = SubResource("Compositor_b2qlf")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.707107, -0.5, 0.5, 0, 0.707107, 0.707107, -0.707107, -0.5, 0.5, 0, 0, 0)
@@ -82,17 +74,8 @@ seed = 46
 current = true
 script = ExtResource("2_v3yqy")
 
-[node name="EditLayerPlane" type="MeshInstance3D" parent="."]
-transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0)
-visible = false
-material_override = SubResource("StandardMaterial3D_7e77o")
-cast_shadow = 0
-ignore_occlusion_culling = true
-mesh = SubResource("PlaneMesh_280yy")
-
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
-mesh = SubResource("CylinderMesh_0geru")
+mesh = SubResource("CapsuleMesh_w26kx")
 
 [node name="UI" type="Control" parent="."]
 layout_mode = 3
@@ -137,10 +120,11 @@ layout_mode = 2
 [node name="Tabs" type="TabContainer" parent="UI/MarginContainer/MarginContainer2/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
-current_tab = 0
+current_tab = 1
 tab_focus_mode = 0
 
 [node name="Options" type="PanelContainer" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/Tabs"]
+visible = false
 layout_mode = 2
 size_flags_vertical = 3
 metadata/_tab_index = 0
@@ -286,111 +270,87 @@ step = 0.1
 value = 1.0
 scrollable = false
 
-[node name="Tiles" type="PanelContainer" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/Tabs"]
-visible = false
+[node name="Tile Paint" type="PanelContainer" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/Tabs"]
 layout_mode = 2
 metadata/_tab_index = 1
 
-[node name="Panel" type="Panel" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/Tabs/Tiles"]
+[node name="Panel" type="Panel" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/Tabs/Tile Paint"]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="MarginContainer" type="MarginContainer" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/Tabs/Tiles"]
+[node name="MarginContainer" type="MarginContainer" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/Tabs/Tile Paint"]
 layout_mode = 2
 theme_override_constants/margin_left = 5
-theme_override_constants/margin_top = 5
 theme_override_constants/margin_right = 5
-theme_override_constants/margin_bottom = 5
 
-[node name="VBoxContainer" type="VBoxContainer" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/Tabs/Tiles/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/Tabs/Tile Paint/MarginContainer"]
 layout_mode = 2
 
-[node name="ScrollContainer" type="ScrollContainer" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/Tabs/Tiles/MarginContainer/VBoxContainer"]
+[node name="HFlowContainer" type="HFlowContainer" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/Tabs/Tile Paint/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/Tabs/Tile Paint/MarginContainer/VBoxContainer/HFlowContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Draw Mode
+"
+vertical_alignment = 1
+
+[node name="OptionButton" type="OptionButton" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/Tabs/Tile Paint/MarginContainer/VBoxContainer/HFlowContainer"]
+layout_mode = 2
+selected = 0
+item_count = 3
+popup/item_0/text = "Off"
+popup/item_1/text = "Paint"
+popup/item_1/id = 1
+popup/item_2/text = "Erase"
+popup/item_2/id = 2
+
+[node name="HSeparator" type="HSeparator" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/Tabs/Tile Paint/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_styles/separator = SubResource("StyleBoxLine_jihis")
+
+[node name="Label" type="Label" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/Tabs/Tile Paint/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Tiles"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/Tabs/Tile Paint/MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="Panel" type="PanelContainer" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/Tabs/Tiles/MarginContainer/VBoxContainer/ScrollContainer"]
+[node name="Panel" type="PanelContainer" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/Tabs/Tile Paint/MarginContainer/VBoxContainer/ScrollContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="TileList" type="ItemList" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/Tabs/Tiles/MarginContainer/VBoxContainer/ScrollContainer/Panel"]
+[node name="ItemList" type="ItemList" parent="UI/MarginContainer/MarginContainer2/VBoxContainer/Tabs/Tile Paint/MarginContainer/VBoxContainer/ScrollContainer/Panel"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 allow_search = false
+item_count = 1
 fixed_icon_size = Vector2i(10, 10)
-
-[node name="Clear" type="Button" parent="UI/MarginContainer/MarginContainer2/VBoxContainer"]
-layout_mode = 2
-text = "Clear"
+item_0/text = "Tile I"
+item_0/icon = ExtResource("9_hndr6")
 
 [node name="GenerateButton" type="Button" parent="UI/MarginContainer/MarginContainer2/VBoxContainer"]
 layout_mode = 2
 text = "Generate"
 
-[node name="MarginContainer2" type="MarginContainer" parent="UI"]
+[node name="HFlowContainer" type="HFlowContainer" parent="UI"]
 layout_mode = 1
-anchors_preset = 12
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = -16.0
-grow_horizontal = 2
-grow_vertical = 0
-theme_override_constants/margin_left = 5
-theme_override_constants/margin_right = 5
-theme_override_constants/margin_bottom = 2
+offset_right = 40.0
+offset_bottom = 40.0
 
-[node name="PanelContainer" type="PanelContainer" parent="UI/MarginContainer2"]
+[node name="SpinBox" type="SpinBox" parent="UI/HFlowContainer"]
 layout_mode = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="UI/MarginContainer2/PanelContainer"]
-layout_mode = 2
-size_flags_horizontal = 0
-theme_override_constants/margin_left = 1
-theme_override_constants/margin_top = 1
-theme_override_constants/margin_right = 1
-theme_override_constants/margin_bottom = 1
-
-[node name="Panel" type="Panel" parent="UI/MarginContainer2/PanelContainer/MarginContainer"]
+[node name="SpinBox2" type="SpinBox" parent="UI/HFlowContainer"]
 layout_mode = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="UI/MarginContainer2/PanelContainer/MarginContainer"]
+[node name="SpinBox3" type="SpinBox" parent="UI/HFlowContainer"]
 layout_mode = 2
-theme_override_constants/margin_left = 5
-theme_override_constants/margin_right = 5
-
-[node name="HBoxContainer" type="HBoxContainer" parent="UI/MarginContainer2/PanelContainer/MarginContainer/MarginContainer"]
-layout_mode = 2
-
-[node name="ModeLabel" type="Label" parent="UI/MarginContainer2/PanelContainer/MarginContainer/MarginContainer/HBoxContainer"]
-layout_mode = 2
-text = "View Mode"
-
-[node name="MarginContainer2" type="MarginContainer" parent="UI/MarginContainer2/PanelContainer"]
-layout_mode = 2
-size_flags_horizontal = 8
-theme_override_constants/margin_left = 1
-theme_override_constants/margin_top = 1
-theme_override_constants/margin_right = 1
-theme_override_constants/margin_bottom = 1
-
-[node name="Panel" type="Panel" parent="UI/MarginContainer2/PanelContainer/MarginContainer2"]
-layout_mode = 2
-
-[node name="MarginContainer" type="MarginContainer" parent="UI/MarginContainer2/PanelContainer/MarginContainer2"]
-layout_mode = 2
-theme_override_constants/margin_left = 5
-theme_override_constants/margin_right = 5
-
-[node name="HBoxContainer" type="HBoxContainer" parent="UI/MarginContainer2/PanelContainer/MarginContainer2/MarginContainer"]
-layout_mode = 2
-
-[node name="TilePosLabel" type="Label" parent="UI/MarginContainer2/PanelContainer/MarginContainer2/MarginContainer/HBoxContainer"]
-layout_mode = 2
-text = "(3,4,5)"
 
 [connection signal="animate_flag_updated" from="UI" to="." method="_on_ui_animate_flag_updated"]
 [connection signal="animate_speed_updated" from="UI" to="." method="_on_ui_animate_speed_updated"]
@@ -406,5 +366,4 @@ text = "(3,4,5)"
 [connection signal="value_changed" from="UI/MarginContainer/MarginContainer2/VBoxContainer/Tabs/Options/VBoxContainer/CellSizeOption/HFlowContainer/SpinBox" to="UI" method="_on_cell_size_value_changed"]
 [connection signal="toggled" from="UI/MarginContainer/MarginContainer2/VBoxContainer/Tabs/Options/VBoxContainer/AnimateOption/HFlowContainer/CheckButton" to="UI" method="_on_animate_flag_value_changed"]
 [connection signal="value_changed" from="UI/MarginContainer/MarginContainer2/VBoxContainer/Tabs/Options/VBoxContainer/AnimateSpeedOption/HFlowContainer/HSlider" to="UI" method="_set_animate_speed_value"]
-[connection signal="pressed" from="UI/MarginContainer/MarginContainer2/VBoxContainer/Clear" to="." method="_on_ui_clear_pressed"]
 [connection signal="pressed" from="UI/MarginContainer/MarginContainer2/VBoxContainer/GenerateButton" to="UI" method="_on_generate_button_pressed"]
