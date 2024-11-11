@@ -1,0 +1,80 @@
+[gd_resource type="Resource" script_class="TilesetWFC" load_steps=27 format=3 uid="uid://bhjllf7uya3y2"]
+
+[ext_resource type="Script" path="res://addons/wave-function-collapse/wfc/tileset.gd" id="1_3482w"]
+[ext_resource type="Script" path="res://addons/wave-function-collapse/wfc/tile.gd" id="2_dkyry"]
+[ext_resource type="PackedScene" uid="uid://d1alaxydnu1cf" path="res://resources/paths/path_none.tscn" id="3_g78e3"]
+[ext_resource type="PackedScene" uid="uid://bqbfbvqa31civ" path="res://resources/paths/path_cross.tscn" id="4_0t0xw"]
+[ext_resource type="PackedScene" uid="uid://bq3lbuycxl7lm" path="res://resources/paths/path_horizontal.tscn" id="5_sbmt2"]
+[ext_resource type="PackedScene" uid="uid://bxu8cyf8hg3ov" path="res://resources/paths/path_vertical.tscn" id="6_irgfo"]
+[ext_resource type="PackedScene" uid="uid://c7rrhk4xqq4du" path="res://resources/paths/path_corner_front_left.tscn" id="7_x2crk"]
+[ext_resource type="PackedScene" uid="uid://ck1j8c7m8ylr8" path="res://resources/paths/path_corner_front_right.tscn" id="8_vdki3"]
+[ext_resource type="PackedScene" uid="uid://b7gmgm2pkgxcr" path="res://resources/paths/path_corner_rear_left.tscn" id="9_tdeld"]
+[ext_resource type="PackedScene" uid="uid://rsp0a7quyr3p" path="res://resources/paths/path_corner_rear_right.tscn" id="10_5v4jj"]
+[ext_resource type="PackedScene" uid="uid://526r42bym7o2" path="res://resources/paths/path_end_front.tscn" id="11_i8kn8"]
+[ext_resource type="PackedScene" uid="uid://cxfatykjqgvvx" path="res://resources/paths/path_end_left.tscn" id="12_y8ft6"]
+[ext_resource type="PackedScene" uid="uid://cdvq4t3c4jcby" path="res://resources/paths/path_end_rear.tscn" id="13_dkkgh"]
+[ext_resource type="PackedScene" uid="uid://cxmthupmqfwys" path="res://resources/paths/path_end_right.tscn" id="14_62sr7"]
+
+[sub_resource type="Resource" id="Resource_07ulk"]
+script = ExtResource("2_dkyry")
+scene = ExtResource("3_g78e3")
+json_path = "res://resources/paths/path-none.json"
+
+[sub_resource type="Resource" id="Resource_fmp4x"]
+script = ExtResource("2_dkyry")
+scene = ExtResource("4_0t0xw")
+json_path = "res://resources/paths/path-cross.json"
+
+[sub_resource type="Resource" id="Resource_dw7p6"]
+script = ExtResource("2_dkyry")
+scene = ExtResource("5_sbmt2")
+json_path = "res://resources/paths/path-horizontal.json"
+
+[sub_resource type="Resource" id="Resource_bfiff"]
+script = ExtResource("2_dkyry")
+scene = ExtResource("6_irgfo")
+json_path = "res://resources/paths/path-vertical.json"
+
+[sub_resource type="Resource" id="Resource_dwyod"]
+script = ExtResource("2_dkyry")
+scene = ExtResource("7_x2crk")
+json_path = "res://resources/paths/path-corner-front-left.json"
+
+[sub_resource type="Resource" id="Resource_x1keu"]
+script = ExtResource("2_dkyry")
+scene = ExtResource("8_vdki3")
+json_path = "res://resources/paths/path-corner-front-right.json"
+
+[sub_resource type="Resource" id="Resource_5v0hv"]
+script = ExtResource("2_dkyry")
+scene = ExtResource("9_tdeld")
+json_path = "res://resources/paths/path-corner-rear-left.json"
+
+[sub_resource type="Resource" id="Resource_fvyas"]
+script = ExtResource("2_dkyry")
+scene = ExtResource("10_5v4jj")
+json_path = "res://resources/paths/path-corner-rear-right.json"
+
+[sub_resource type="Resource" id="Resource_qgbs1"]
+script = ExtResource("2_dkyry")
+scene = ExtResource("11_i8kn8")
+json_path = "res://resources/paths/path-end-front.json"
+
+[sub_resource type="Resource" id="Resource_g3r7d"]
+script = ExtResource("2_dkyry")
+scene = ExtResource("12_y8ft6")
+json_path = "res://resources/paths/path-end-left.json"
+
+[sub_resource type="Resource" id="Resource_5kuhm"]
+script = ExtResource("2_dkyry")
+scene = ExtResource("13_dkkgh")
+json_path = "res://resources/paths/path-end-rear.json"
+
+[sub_resource type="Resource" id="Resource_l21y2"]
+script = ExtResource("2_dkyry")
+scene = ExtResource("14_62sr7")
+json_path = "res://resources/paths/path-end-right.json"
+
+[resource]
+script = ExtResource("1_3482w")
+tiles = Array[ExtResource("2_dkyry")]([SubResource("Resource_07ulk"), SubResource("Resource_fmp4x"), SubResource("Resource_dw7p6"), SubResource("Resource_bfiff"), SubResource("Resource_dwyod"), SubResource("Resource_x1keu"), SubResource("Resource_5v0hv"), SubResource("Resource_fvyas"), SubResource("Resource_qgbs1"), SubResource("Resource_g3r7d"), SubResource("Resource_5kuhm"), SubResource("Resource_l21y2")])

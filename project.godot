@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="wave-function-collapse"
-run/main_scene="res://tests/Main.tscn"
+run/main_scene="res://editor/Editor.tscn"
 config/features=PackedStringArray("4.3", "Forward Plus")
 config/icon="res://icon.svg"
 

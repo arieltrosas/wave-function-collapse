@@ -23,10 +23,11 @@ const ANIMATE_WAIT_TIME : float = 1.0 / 30
 
 ## Public Members
 var rng : RandomNumberGenerator
+var use_thread : bool = true
 
 ## Private Members
-var _m_solver : SolverWFC
-var _m_solver_trace : Array
+var solver : SolverWFC
+var solver_trace : Array
 var _m_tileMap : Array[Node3D]
 var _m_tile_ids : Array[String]
 var _m_collapse_thread : Thread
@@ -62,8 +63,11 @@ func collapse() -> void:
 	var P : SolverWFC.Problem = SolverWFC.Problem.make_problem(size,tiles,BORDER_KEYS,constraints,_get_neighbour,fixed_cells)
 	var S : SolverWFC.Solution = SolverWFC.Solution.new()
 
-	if animate: _m_collapse_thread.start(_collapse_animate_on.bind(P,S))
-	else: _m_collapse_thread.start(_collapse_animate_off.bind(P,S))
+	if use_thread:
+		if animate: _m_collapse_thread.start(_collapse_animate_on.bind(P,S))
+		else: _m_collapse_thread.start(_collapse_animate_off.bind(P,S))
+	else:
+		solver.solve(P,S)
 
 
 func place_tile(p_id : String, p_position : Vector3i) -> void:
@@ -109,7 +113,7 @@ func clear() -> void:
 ## Engine Methods
 
 func _init() -> void:
-	_m_solver = SolverWFC.new()
+	solver = SolverWFC.new()
 	_m_collapse_thread = Thread.new()
 	_m_animation_thread = Thread.new()
 
@@ -164,8 +168,8 @@ func _get_neighbour(p_index : int, p_border_key : String) -> int:
 	match p_border_key:
 		"left": neighbour_position = index_position + Vector3i.LEFT
 		"right": neighbour_position = index_position + Vector3i.RIGHT
-		"front": neighbour_position = index_position + Vector3i.FORWARD
-		"back": neighbour_position = index_position + Vector3i.BACK
+		"front": neighbour_position = index_position + Vector3i.BACK
+		"back": neighbour_position = index_position + Vector3i.FORWARD
 		"top": neighbour_position = index_position + Vector3i.UP
 		"bottom": neighbour_position = index_position + Vector3i.DOWN
 
@@ -173,11 +177,13 @@ func _get_neighbour(p_index : int, p_border_key : String) -> int:
 
 
 func _set_solver_parameters() -> void:
-	if not rng:
-		rng = RandomNumberGenerator.new()
-	if seed != 0: rng.seed = seed
-	else: rng.randomize()
-	_m_solver.rng = rng
+	if not rng: rng = RandomNumberGenerator.new()
+
+	if seed != 0:
+		rng.seed = seed
+	else:
+		rng.randomize()
+	solver.rng = rng
 
 
 func _collapse_animate_on(P : SolverWFC.Problem, S : SolverWFC.Solution) -> void:
@@ -185,14 +191,14 @@ func _collapse_animate_on(P : SolverWFC.Problem, S : SolverWFC.Solution) -> void
 
 	S.updated.connect(
 		func(p_index : int) -> void:
-			_m_solver_trace.push_back({"index" : p_index, "tile" : S.get_tile(p_index)})
+			solver_trace.push_back({"index" : p_index, "tile" : S.get_tile(p_index)})
 	)
 
 	_m_animation_thread.start(
 		func () -> void:
-			while not _m_solver_trace.is_empty() or _m_collapse_thread.is_alive():
-				if not _m_solver_trace.is_empty():
-					var trace : Dictionary = _m_solver_trace.pop_front()
+			while not solver_trace.is_empty() or _m_collapse_thread.is_alive():
+				if not solver_trace.is_empty():
+					var trace : Dictionary = solver_trace.pop_front()
 					var tile_index : int = trace["index"]
 					var tile_id : String = trace["tile"]
 					place_tile(tile_id,_index2position(tile_index))
@@ -201,12 +207,12 @@ func _collapse_animate_on(P : SolverWFC.Problem, S : SolverWFC.Solution) -> void
 			_m_animation_running = false
 	)
 
-	_m_solver.solve(P,S)
+	solver.solve(P,S)
 	_m_animation_thread.wait_to_finish()
 
 
 func _collapse_animate_off(P : SolverWFC.Problem, S : SolverWFC.Solution) -> void:
-	_m_solver.solve(P,S)
+	solver.solve(P,S)
 	for index in P.size:
 		var tile_id : String = S.get_tile(index)
 		var tile_position : Vector3i = _index2position(index)

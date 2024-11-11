@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://cxmthupmqfwys"]
+
+[ext_resource type="PackedScene" uid="uid://da3unhgi83xod" path="res://resources/paths/path-end-right.glb" id="1_kcktb"]
+
+[node name="path-end-right" instance=ExtResource("1_kcktb")]
+
+[node name="Base_004" parent="." index="0"]
+transform = Transform3D(1, 0, -2.22525e-07, 0, 1, 0, 2.22525e-07, 0, 1, 0, 0, 0)

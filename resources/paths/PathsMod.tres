@@ -1,0 +1,56 @@
+[gd_resource type="Resource" script_class="TilesetWFC" load_steps=19 format=3 uid="uid://dy4xxidmlebdj"]
+
+[ext_resource type="Script" path="res://addons/wave-function-collapse/wfc/tileset.gd" id="1_ocuns"]
+[ext_resource type="Script" path="res://addons/wave-function-collapse/wfc/tile.gd" id="2_76l45"]
+[ext_resource type="PackedScene" uid="uid://d1alaxydnu1cf" path="res://resources/paths/path_none.tscn" id="3_42e2l"]
+[ext_resource type="PackedScene" uid="uid://bqbfbvqa31civ" path="res://resources/paths/path_cross.tscn" id="4_03hci"]
+[ext_resource type="PackedScene" uid="uid://bq3lbuycxl7lm" path="res://resources/paths/path_horizontal.tscn" id="5_5how6"]
+[ext_resource type="PackedScene" uid="uid://bxu8cyf8hg3ov" path="res://resources/paths/path_vertical.tscn" id="6_xfn70"]
+[ext_resource type="PackedScene" uid="uid://c7rrhk4xqq4du" path="res://resources/paths/path_corner_front_left.tscn" id="7_d28j4"]
+[ext_resource type="PackedScene" uid="uid://ck1j8c7m8ylr8" path="res://resources/paths/path_corner_front_right.tscn" id="8_apdkd"]
+[ext_resource type="PackedScene" uid="uid://b7gmgm2pkgxcr" path="res://resources/paths/path_corner_rear_left.tscn" id="9_ph06c"]
+[ext_resource type="PackedScene" uid="uid://rsp0a7quyr3p" path="res://resources/paths/path_corner_rear_right.tscn" id="10_s40tw"]
+
+[sub_resource type="Resource" id="Resource_07ulk"]
+script = ExtResource("2_76l45")
+scene = ExtResource("3_42e2l")
+json_path = "res://resources/paths/path-none.json"
+
+[sub_resource type="Resource" id="Resource_fmp4x"]
+script = ExtResource("2_76l45")
+scene = ExtResource("4_03hci")
+json_path = "res://resources/paths/path-cross.json"
+
+[sub_resource type="Resource" id="Resource_dw7p6"]
+script = ExtResource("2_76l45")
+scene = ExtResource("5_5how6")
+json_path = "res://resources/paths/path-horizontal.json"
+
+[sub_resource type="Resource" id="Resource_bfiff"]
+script = ExtResource("2_76l45")
+scene = ExtResource("6_xfn70")
+json_path = "res://resources/paths/path-vertical.json"
+
+[sub_resource type="Resource" id="Resource_dwyod"]
+script = ExtResource("2_76l45")
+scene = ExtResource("7_d28j4")
+json_path = "res://resources/paths/path-corner-front-left.json"
+
+[sub_resource type="Resource" id="Resource_x1keu"]
+script = ExtResource("2_76l45")
+scene = ExtResource("8_apdkd")
+json_path = "res://resources/paths/path-corner-front-right.json"
+
+[sub_resource type="Resource" id="Resource_5v0hv"]
+script = ExtResource("2_76l45")
+scene = ExtResource("9_ph06c")
+json_path = "res://resources/paths/path-corner-rear-left.json"
+
+[sub_resource type="Resource" id="Resource_fvyas"]
+script = ExtResource("2_76l45")
+scene = ExtResource("10_s40tw")
+json_path = "res://resources/paths/path-corner-rear-right.json"
+
+[resource]
+script = ExtResource("1_ocuns")
+tiles = Array[ExtResource("2_76l45")]([SubResource("Resource_07ulk"), SubResource("Resource_fmp4x"), SubResource("Resource_dw7p6"), SubResource("Resource_bfiff"), SubResource("Resource_dwyod"), SubResource("Resource_x1keu"), SubResource("Resource_5v0hv"), SubResource("Resource_fvyas")])

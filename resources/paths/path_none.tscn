@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://d1alaxydnu1cf"]
+
+[ext_resource type="PackedScene" uid="uid://cgbyciyj0mv7k" path="res://resources/paths/path-none.glb" id="1_kemcp"]
+
+[node name="path-none" instance=ExtResource("1_kemcp")]
+
+[node name="Base" parent="." index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)

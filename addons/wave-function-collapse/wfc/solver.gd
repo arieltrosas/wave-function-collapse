@@ -16,6 +16,7 @@ class Solution extends RefCounted:
 		var t : int = solution[p_index]
 		return tiles[t] if t != -1 else ""
 
+
 class Problem extends RefCounted:
 
 	static func make_problem(	p_size : int,
@@ -44,7 +45,7 @@ class Problem extends RefCounted:
 				for i in P.domain_size:
 					var t : String = P.tiles[i]
 					var t_value : float = tile_border_constraints.get(t,0.0)
-					border_constraints_array[i] = p_constraints[tile][border_key][P.tiles[i]]
+					border_constraints_array[i] = p_constraints[tile][border_key].get(P.tiles[i],0.0)
 				P.constraints[tile][border_key] = border_constraints_array
 
 		P.neighbourhood_function = p_neighbourhood_function
@@ -66,6 +67,7 @@ class Problem extends RefCounted:
 		var border_constraint : Array[float]
 		border_constraint.assign(constraints[tiles[p_tile]][p_border_key])
 		return border_constraint
+
 
 class Cell extends RefCounted:
 	signal tile_updated
@@ -127,12 +129,14 @@ class Cell extends RefCounted:
 	func constrain_domain(p_constraint : Array[float]) -> void:
 		for i in domain.size(): domain[i] = domain[i] * p_constraint[i]
 
+
 	func _normalize_domain() -> void:
 		var c : float = 0.0
 		for p in domain: c += p
 		if c == 0.0: return
 		c = 1.0 / c
 		for i in domain.size(): domain[i] *= c
+
 
 	func duplicate() -> Cell:
 		var other : Cell = Cell.new()
@@ -141,13 +145,16 @@ class Cell extends RefCounted:
 		other.tile = tile
 		return other
 
+
 	func assign(p_cell : Cell) -> void:
 		index = p_cell.index
 		tile = p_cell.tile
 		domain = p_cell.domain.duplicate()
 
+
 	func _to_string() -> String:
 		return "Cell(%d,%d)%s" % [index,tile,str(domain)]
+
 
 class PriorityQueue extends RefCounted:
 	var _cell_indexes : Array[int]
@@ -166,6 +173,7 @@ class PriorityQueue extends RefCounted:
 	func next() -> int:
 		_cell_entropy.pop_front()
 		return _cell_indexes.pop_front()
+
 
 class BacktrackNode extends RefCounted:
 	var domain_veto : Array[float]
@@ -186,6 +194,8 @@ class BacktrackNode extends RefCounted:
 
 ################################################################################
 ## Members
+
+signal solver_finished(time : int, nback : int)
 
 var rng : RandomNumberGenerator = null
 
@@ -233,6 +243,9 @@ func solve(P : Problem, S : Solution) -> int:
 
 	exploration_queue.insert(initial_index,0)
 
+	var time_start : float = Time.get_ticks_msec()
+	var nbacktracks : int = 0
+
 	# Algorithm
 
 	while not exploration_queue.is_empty(): # main loop
@@ -250,10 +263,16 @@ func solve(P : Problem, S : Solution) -> int:
 			if backtrack_stack.is_empty():
 				return ERROR_UNSOLVABLE_PROBLEM
 			backtrack = _backtrack(cells,backtrack_stack,exploration_queue,P)
+			nbacktracks += 1
 
 		# end backtrack loop
 
 	# end main loop
+
+	var time_end : int = Time.get_ticks_msec()
+	var time : int = time_end - time_start
+
+	solver_finished.emit(time,nbacktracks)
 
 	# End Algorithm
 

@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="TilesetWFC" load_steps=7 format=3 uid="uid://30k5gh2w1eh1"]
+
+[ext_resource type="Script" path="res://addons/wave-function-collapse/wfc/tileset.gd" id="1_2gbhv"]
+[ext_resource type="Script" path="res://addons/wave-function-collapse/wfc/tile.gd" id="2_qg30g"]
+[ext_resource type="PackedScene" uid="uid://gf3mtqi6ar07" path="res://resources/chess/black.tscn" id="3_kwdms"]
+[ext_resource type="PackedScene" uid="uid://bsha4ham34as0" path="res://resources/chess/white.tscn" id="4_0hsec"]
+
+[sub_resource type="Resource" id="Resource_5cbkb"]
+script = ExtResource("2_qg30g")
+scene = ExtResource("3_kwdms")
+json_path = "res://resources/chess/black.json"
+
+[sub_resource type="Resource" id="Resource_rk27u"]
+script = ExtResource("2_qg30g")
+scene = ExtResource("4_0hsec")
+json_path = "res://resources/chess/white.json"
+
+[resource]
+script = ExtResource("1_2gbhv")
+tiles = Array[ExtResource("2_qg30g")]([SubResource("Resource_5cbkb"), SubResource("Resource_rk27u")])

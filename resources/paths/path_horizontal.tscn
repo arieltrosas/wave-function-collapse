@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://bq3lbuycxl7lm"]
+
+[ext_resource type="PackedScene" uid="uid://bjm6lauk1xw3s" path="res://resources/paths/path-vertical.glb" id="1_ela7f"]
+
+[node name="path-vertical2" instance=ExtResource("1_ela7f")]
+
+[node name="path-vertical" parent="." index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)

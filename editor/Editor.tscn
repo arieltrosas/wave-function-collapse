@@ -1,13 +1,10 @@
-[gd_scene load_steps=22 format=3 uid="uid://c3uvgrfbv2vk0"]
+[gd_scene load_steps=15 format=3 uid="uid://c3uvgrfbv2vk0"]
 
-[ext_resource type="Script" path="res://addons/wave-function-collapse/editor/editor.gd" id="1_1x12t"]
-[ext_resource type="Script" path="res://addons/wave-function-collapse/editor/camera.gd" id="2_v3yqy"]
+[ext_resource type="Script" path="res://editor/editor.gd" id="1_1x12t"]
+[ext_resource type="Script" path="res://editor/camera.gd" id="2_v3yqy"]
+[ext_resource type="Resource" uid="uid://bhjllf7uya3y2" path="res://resources/paths/Paths.tres" id="3_270lp"]
 [ext_resource type="Script" path="res://addons/wave-function-collapse/wfc/node.gd" id="4_0by6m"]
-[ext_resource type="Script" path="res://addons/wave-function-collapse/wfc/tileset.gd" id="5_xnn4o"]
-[ext_resource type="Script" path="res://addons/wave-function-collapse/wfc/tile.gd" id="6_q28oe"]
-[ext_resource type="PackedScene" uid="uid://bsha4ham34as0" path="res://resources/chess/white.tscn" id="7_2iom0"]
-[ext_resource type="PackedScene" uid="uid://gf3mtqi6ar07" path="res://resources/chess/black.tscn" id="8_e4xyo"]
-[ext_resource type="Script" path="res://addons/wave-function-collapse/editor/ui.gd" id="8_oura0"]
+[ext_resource type="Script" path="res://editor/ui.gd" id="8_oura0"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_m4nre"]
 sky_top_color = Color(0.398306, 0.468266, 0.565609, 1)
@@ -26,20 +23,6 @@ glow_enabled = true
 
 [sub_resource type="Compositor" id="Compositor_b2qlf"]
 
-[sub_resource type="Resource" id="Resource_d84wm"]
-script = ExtResource("6_q28oe")
-scene = ExtResource("8_e4xyo")
-json_path = "res://resources/chess/black.json"
-
-[sub_resource type="Resource" id="Resource_r2jgy"]
-script = ExtResource("6_q28oe")
-scene = ExtResource("7_2iom0")
-json_path = "res://resources/chess/white.json"
-
-[sub_resource type="Resource" id="Resource_xxy7k"]
-script = ExtResource("5_xnn4o")
-tiles = Array[ExtResource("6_q28oe")]([SubResource("Resource_d84wm"), SubResource("Resource_r2jgy")])
-
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7e77o"]
 transparency = 1
 cull_mode = 2
@@ -50,8 +33,6 @@ albedo_color = Color(0, 0.587667, 0.86, 0.686275)
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_280yy"]
 size = Vector2(4000, 4000)
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_0geru"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_7nfwd"]
 
@@ -75,8 +56,8 @@ shadow_enabled = true
 
 [node name="Generator" type="Node3D" parent="."]
 script = ExtResource("4_0by6m")
-tileset = SubResource("Resource_xxy7k")
-seed = 46
+tileset = ExtResource("3_270lp")
+cell_size = 2.0
 
 [node name="Camera" type="Camera3D" parent="."]
 current = true
@@ -89,10 +70,6 @@ material_override = SubResource("StandardMaterial3D_7e77o")
 cast_shadow = 0
 ignore_occlusion_culling = true
 mesh = SubResource("PlaneMesh_280yy")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
-mesh = SubResource("CylinderMesh_0geru")
 
 [node name="UI" type="Control" parent="."]
 layout_mode = 3

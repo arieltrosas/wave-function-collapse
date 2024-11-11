@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://rsp0a7quyr3p"]
+
+[ext_resource type="PackedScene" uid="uid://bn5gsaqyfa7n1" path="res://resources/paths/path-corner-rear-right.glb" id="1_6opkn"]
+
+[node name="path-corner-rear-right2" instance=ExtResource("1_6opkn")]
+
+[node name="path-corner-rear-right" parent="." index="0"]
+transform = Transform3D(1.78814e-07, 0, 1, 0, 1, 0, -1, 0, 1.78814e-07, 0, 0, 0)

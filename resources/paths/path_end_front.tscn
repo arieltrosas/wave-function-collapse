@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://526r42bym7o2"]
+
+[ext_resource type="PackedScene" uid="uid://5116k7855dby" path="res://resources/paths/path-end-front.glb" id="1_oefal"]
+
+[node name="path-end-front" instance=ExtResource("1_oefal")]
+
+[node name="Base_002" parent="." index="0"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0)

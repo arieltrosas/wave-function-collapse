@@ -184,7 +184,7 @@ func _calculate_projected_tile_position(p_mouse_position : Vector2) -> Vector3i:
 		zdimension_size = dimensions.y
 
 	var projected_position : Vector3 = camera.project_position(p_mouse_position,zdistance * cell_size)
-	projected_position = projected_position - generator.position + Vector3i(1,1,1) * 0.5
+	projected_position = projected_position - generator.position + Vector3i(1,1,1) * 0.5 * cell_size
 
 	var tile_position : Vector3i = projected_position / cell_size
 
@@ -238,6 +238,11 @@ func _set_status_bar() -> void:
 func _ready() -> void:
 	for tile in generator.tileset.tiles:
 		ui.add_tile_to_list(tile.get_id())
+
+	generator.seed = 0
+	generator.cell_size = 1.0
+	generator.animate = true
+	generator.animate_speed = 1.0
 
 
 func _process(delta: float) -> void:
@@ -357,6 +362,7 @@ func _set_edit_mode(p_mode : int) -> void:
 	if edit_mode == -1:
 		camera.set_camera_mode_orbit()
 		edit_layer_plane.visible = false
+		for tile in generator._m_tileMap: if tile: tile.visible = true
 		return
 
 	edit_layer_plane.visible = true
